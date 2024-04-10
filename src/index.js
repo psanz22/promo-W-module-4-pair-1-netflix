@@ -1,13 +1,13 @@
-const express = require('express');
-const cors = require('cors');
-const mysql = require('mysql2/promise');
+const express = require("express");
+const cors = require("cors");
+const mysql = require("mysql2/promise");
 
 // create and config server
 const server = express();
 server.use(cors());
-server.use(express.json({limit: "25mb"}));
+server.use(express.json({ limit: "25mb" }));
 
-async function getDBConnection () {
+async function getDBConnection() {
   const connection = await mysql.createConnection({
     host: "sql.freedb.tech",
     user: "freedb_admin_paula",
@@ -25,6 +25,7 @@ server.listen(serverPort, () => {
 });
 
 server.get("/movies", async (req, res) => {
+  console.log("serán estos los query params?:", req.query);
   const connection = await getDBConnection();
   const sql = "SELECT * FROM movies";
   const [moviesResult] = await connection.query(sql); // devuelve un array con dos elementos
@@ -34,6 +35,3 @@ server.get("/movies", async (req, res) => {
     message: moviesResult,
   });
 });
-
-
-
