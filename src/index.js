@@ -1,6 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 const mysql = require('mysql2/promise');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 // create and config server
 const server = express();
@@ -53,3 +55,27 @@ server.get('/movies', async (req, res) => {
     message: moviesResult,
   });
 });
+
+server.post('/signup', async (req, res) => {
+  const email = req.body.email;
+  const password = req.body.password;
+  const connection = await getDBConnection();
+  const emailQuery = 'SELECT * FROM users WHERE email = ?';
+  const [emailResult] = await connection.query(emailQuery, [email]);
+  if (emailResult.length === 0) {
+    const passwordHashed = await bcrypt.hash(password, 10);
+    const newUserQuery = 'INSERT INTO users(email, password) VALUES (?, ?)';
+    const [newUserResult] = await connection.query(newUserQuery, [
+      email, passwordHashed
+    ]);
+    res.status(201).json({
+      success: true,
+      id: newUserResult.id
+    });
+  } else{
+    res.status(400).json({
+      success: false,
+      message: 'Email already exists'
+    });
+  }
+})

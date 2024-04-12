@@ -26,6 +26,7 @@ const MoviesList = (props) => {
   };
 
   return props.movies.length ? renderMovieList() : renderEmptyList();
+  
 };
 
 export default MoviesList;
