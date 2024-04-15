@@ -57,6 +57,7 @@ server.get('/movies', async (req, res) => {
 });
 
 server.post('/signup', async (req, res) => {
+  console.log('req.body', req.body);
   const email = req.body.email;
   const password = req.body.password;
   const connection = await getDBConnection();
@@ -66,16 +67,17 @@ server.post('/signup', async (req, res) => {
     const passwordHashed = await bcrypt.hash(password, 10);
     const newUserQuery = 'INSERT INTO users(email, password) VALUES (?, ?)';
     const [newUserResult] = await connection.query(newUserQuery, [
-      email, passwordHashed
+      email,
+      passwordHashed,
     ]);
     res.status(201).json({
       success: true,
-      id: newUserResult.id
+      id: newUserResult.id,
     });
-  } else{
+  } else {
     res.status(400).json({
       success: false,
-      message: 'Email already exists'
+      message: 'Email already exists',
     });
   }
-})
+});
